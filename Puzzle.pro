@@ -25,11 +25,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        computerplayer.cpp \
+        game.cpp \
+        gameboard.cpp \
+        humanplayer.cpp \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        player.cpp \
+        puzzle.cpp
 
 HEADERS += \
-        mainwindow.h
+    computerplayer.h \
+    game.h \
+    gameboard.h \
+    humanplayer.h \
+    mainwindow.h \
+    player.h \
+    puzzle.h
 
 FORMS += \
         mainwindow.ui
@@ -38,3 +50,9 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    mainwindow_icon.ico
+
+RESOURCES += \
+    resources.qrc

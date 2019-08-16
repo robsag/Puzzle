@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/Icons">
+        <file>main_window_icon.ico</file>
+        <file>new_game_icon.ico</file>
+        <file>load_game_icon.ico</file>
+    </qresource>
+</RCC>
