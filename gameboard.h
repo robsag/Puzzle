@@ -6,12 +6,16 @@
 
 class GameBoard
 {
-private:
-    std::vector<std::vector<Puzzle>> puzzles;
 
 public:
-    GameBoard();
+    GameBoard(int, QWidget*);
+    ~GameBoard();
     void getPuzzle(Puzzle*);
+    void display(void);
+
+private:
+    std::vector<Puzzle*> *puzzles;
+
 };
 
 #endif // GAMEBOARD_H

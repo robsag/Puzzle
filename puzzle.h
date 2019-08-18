@@ -1,13 +1,17 @@
 #ifndef PUZZLE_H
 #define PUZZLE_H
 
-#include <QPushButton>
+#include <QToolButton>
+#include <QLabel>
 
-class Puzzle : public QPushButton
+class Puzzle : public QToolButton
 {
+
 public:
-    Puzzle();
-    ~Puzzle();
+    Puzzle(const QString&, QWidget*);
+    virtual ~Puzzle();
+    QLabel *label;
+
 };
 
 #endif // PUZZLE_H

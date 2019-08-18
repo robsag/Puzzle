@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_update_lcdNumber()));
+    ui->label->setVisible(false);
+    ui->timeLabel->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -17,14 +19,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionNowa_Gra_triggered()
 {
-    this->game = new Game();
+    game = new Game(this);
     game->play();
     timer->start(10);
+    ui->label->setVisible(true);
+    ui->timeLabel->setVisible(true);
 }
 
 void MainWindow::on_actionWczytaj_Gre_triggered()
 {
     this->game = new Game("save.txt");
+    ui->label->setVisible(true);
+    ui->timeLabel->setVisible(true);
 }
 
 void MainWindow::on_update_lcdNumber()

@@ -1,13 +1,21 @@
 #include "game.h"
 
-Game::Game()
+Game::Game(QWidget *parent)
 {
     time = 0;
+    gameBoard = new GameBoard(3, parent); //TODO: gameboard size
+    gameBoard->display();
 }
 
 Game::Game(std::string file)
 {
     //time = ?;
+}
+
+Game::~Game()
+{
+    delete player;
+    delete gameBoard;
 }
 
 int Game::getTime(void)

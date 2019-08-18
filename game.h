@@ -2,16 +2,13 @@
 #define GAME_H
 
 #include <string>
+#include <gameboard.h>
 #include <player.h>
 
 class Game
 {
-private:
-    Player *player;
-    int time;
-
 public:
-    Game ();
+    Game (QWidget*);
     Game(std::string);
     ~Game();
     int getTime(void);
@@ -19,6 +16,12 @@ public:
     void play(void);
     void load(void);
     void save(void);
+
+private:
+    GameBoard *gameBoard;
+    Player *player;
+    int time;
+
 };
 
 #endif // GAME_H
