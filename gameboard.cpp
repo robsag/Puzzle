@@ -6,15 +6,14 @@
 GameBoard::GameBoard(int size, QWidget *parent)
 {
     //inicjalizacja puzzli
-    puzzles = new std::vector<Puzzle*>(pow(size,2));
+    puzzles = new std::vector<Puzzle*>(unsigned(pow(size,2)));
     int puzzleSize = (parent->size().width() - 40)/size;
-    int x = puzzleSize;
     for (int i = 0; i < pow(size,2) - 1; i++) {
         Puzzle* newPuzzle = new Puzzle(QString::fromStdString(std::to_string(i + 1)), parent);
         newPuzzle->resize(puzzleSize,puzzleSize);
         newPuzzle->label->resize(puzzleSize,puzzleSize);
         newPuzzle->label->setFont(QFont("Snap ITC", newPuzzle->width() / 8));
-        (*puzzles)[i] = newPuzzle;
+        (*puzzles)[unsigned(i)] = newPuzzle;
     }
 
     //ustawianie tła puzzli
@@ -23,26 +22,34 @@ GameBoard::GameBoard(int size, QWidget *parent)
     int rectHeight = puzzleBackground.height()/size;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            if ((*puzzles)[i*size + j] != nullptr) {
+            if ((*puzzles)[unsigned(i*size + j)] != nullptr) {
                 QRect rect(rectWidth * i, rectHeight * j, puzzleSize - 10, puzzleSize - 10);
                 QPixmap croppedBackground = puzzleBackground.copy(rect);
                 QIcon buttonBackground(croppedBackground);
-                (*puzzles)[j*size + i]->setIcon(croppedBackground);
-                (*puzzles)[j*size + i]->setIconSize(croppedBackground.rect().size());
+                (*puzzles)[unsigned(j*size + i)]->setIcon(croppedBackground);
+                (*puzzles)[unsigned(j*size + i)]->setIconSize(croppedBackground.rect().size());
             }
         }
     }
 
-    //mieszanie puzzli
+    //generowanie pozycji puzzli
+    std::vector<QPoint> positions(unsigned(pow(size,2)));
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            positions[unsigned(i*size + j)] = QPoint(20 + i*puzzleSize, 40 + j*puzzleSize);
+        }
+    }
+
+    //mieszanie pozycji puzzli
     std::random_device rd;
     std::mt19937 g(rd());
-    std::shuffle(puzzles->begin(), puzzles->end(), g);
+    std::shuffle(positions.begin(), positions.end(), g);
 
     //ustawienie pozycji puzzli
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            if ((*puzzles)[j*size + i] != nullptr) {
-                (*puzzles)[j*size + i]->move(20 + i*puzzleSize, 40 + j*puzzleSize);
+            if (i != (size - 1) || j != (size - 1)) {
+                (*puzzles)[unsigned(i*size + j)]->move(positions[unsigned(i*size + j)]);
             }
         }
     }
@@ -56,16 +63,38 @@ GameBoard::~GameBoard()
     puzzles->clear();
 }
 
-void GameBoard::getPuzzle(Puzzle * puzzle)
+Puzzle* GameBoard::getPuzzle(int pos)
 {
+    return (*puzzles)[unsigned(pos)];
+}
 
+Puzzle *GameBoard::getPuzzleByPos(const QPoint &pos)
+{
+    for (Puzzle *puzzle : *puzzles) {
+        if (puzzle != nullptr) {
+            if (puzzle->x() == pos.x() && puzzle->y() == pos.y()) {
+                return puzzle;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void GameBoard::setPuzzlePos(int num, const QPoint &pos)
+{
+    (*puzzles)[unsigned(num)]->move(pos);
+}
+
+int GameBoard::getSize()
+{
+    return int(puzzles->size());
 }
 
 void GameBoard::display()
 {
     for (int i = 0; i < int(puzzles->size()); i++) {
-        if ((*puzzles)[i] != nullptr) {
-            (*puzzles)[i]->show();
+        if ((*puzzles)[unsigned(i)] != nullptr) {
+            (*puzzles)[unsigned(i)]->show();
         }
     }
 }

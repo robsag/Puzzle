@@ -9,7 +9,7 @@ class Puzzle : public QToolButton
 
 public:
     Puzzle(const QString&, QWidget*);
-    virtual ~Puzzle();
+    ~Puzzle();
     QLabel *label;
 
 };

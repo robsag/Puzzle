@@ -5,12 +5,14 @@
 #include <gameboard.h>
 #include <player.h>
 
-class Game
+class Game : public QObject
 {
 public:
     Game (QWidget*);
     Game(std::string);
     ~Game();
+    GameBoard* getGameBoard(void);
+    Player* getPlayer(void);
     int getTime(void);
     void setTime(int);
     void play(void);

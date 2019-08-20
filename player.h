@@ -2,15 +2,20 @@
 #define PLAYER_H
 
 #include <string>
+#include <gameboard.h>
 
 class Player
 {
-    std::string name;
+
 public:
     Player();
     virtual ~Player();
     std::string getName(void);
-    virtual void movePuzzle(int, int) = 0;
+    virtual void movePuzzle(QToolButton*, GameBoard*) = 0;
+
+protected:
+    std::string name;
+
 };
 
 #endif // PLAYER_H

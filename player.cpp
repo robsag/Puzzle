@@ -9,8 +9,3 @@ Player::~Player()
 {
 
 }
-
-std::string Player::getName(void)
-{
-    return "";
-}

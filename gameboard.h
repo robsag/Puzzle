@@ -10,7 +10,10 @@ class GameBoard
 public:
     GameBoard(int, QWidget*);
     ~GameBoard();
-    void getPuzzle(Puzzle*);
+    Puzzle* getPuzzle(int);
+    Puzzle* getPuzzleByPos(const QPoint&);
+    void setPuzzlePos(int, const QPoint&);
+    int getSize(void);
     void display(void);
 
 private:
