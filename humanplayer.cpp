@@ -7,12 +7,11 @@ HumanPlayer::HumanPlayer(std::string name)
 
 HumanPlayer::~HumanPlayer()
 {
-
+    ;
 }
 
 void HumanPlayer::movePuzzle(QToolButton *clickedButton, GameBoard *gameBoard)
 {
-    //Puzzle *clickedPuzzle = gameBoard->getPuzzleByPos(clickedButton->pos());
     QPoint puzzlePos = clickedButton->pos();
     int puzzleNum = clickedButton->text().toInt();
     int puzzleSize = clickedButton->width();

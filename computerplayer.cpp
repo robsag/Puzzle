@@ -10,7 +10,7 @@ ComputerPlayer::~ComputerPlayer()
 
 }
 
-void ComputerPlayer::movePuzzle(int, int)
+void ComputerPlayer::movePuzzle(QToolButton *, GameBoard *)
 {
 
 }

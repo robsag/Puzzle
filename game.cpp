@@ -2,18 +2,24 @@
 #include "humanplayer.h"
 #include "computerplayer.h"
 
-Game::Game(QWidget *parent)
+Game::Game(QWidget *parent, QString playerName, int level, bool singleplayer)
 {
-    int level = 3;
-
     time = 0;
-    gameBoard = new GameBoard(level, parent); //TODO: gameboard size
-    gameBoard->display();
+    gameBoard1 = new GameBoard(level, parent);
+    gameBoard1->display();
 
-    player = new HumanPlayer("tester");
+    player1 = new HumanPlayer(playerName.toStdString());
+
+    if(singleplayer) {
+        player2 = nullptr;
+        gameBoard2 = nullptr;
+    } else {
+        player2 = new ComputerPlayer();
+        gameBoard2 = new GameBoard(*gameBoard1, parent);
+    }
 
     for (int i = 0; i < pow(level,2); i++) {
-        connect(gameBoard->getPuzzle(unsigned(i)), SIGNAL(clicked()), parent, SLOT(on_click_toolButton(/*gameBoard->getPuzzle(unsigned(i))*/)));
+        connect(gameBoard1->getPuzzle(i), SIGNAL(clicked()), parent, SLOT(on_click_toolButton()));
     }
 }
 
@@ -24,18 +30,30 @@ Game::Game(std::string file)
 
 Game::~Game()
 {
-    delete player;
-    delete gameBoard;
+    delete player1;
+    delete player2;
+    delete gameBoard1;
+    delete gameBoard2;
 }
 
-GameBoard *Game::getGameBoard()
+GameBoard *Game::getGameBoard1()
 {
-    return gameBoard;
+    return gameBoard1;
 }
 
-Player *Game::getPlayer()
+GameBoard *Game::getGameBoard2()
 {
-    return player;
+    return gameBoard2;
+}
+
+Player *Game::getPlayer1()
+{
+    return player1;
+}
+
+Player *Game::getPlayer2()
+{
+    return player2;
 }
 
 int Game::getTime(void)

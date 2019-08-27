@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <game.h>
+
+class Game;
 
 namespace Ui {
 class MainWindow;
@@ -18,13 +19,16 @@ public:
 
 private slots:
     void on_actionNowa_Gra_triggered();
+    void on_actionNowa_Gra_z_Komputerem_triggered();
     void on_actionWczytaj_Gre_triggered();
     void on_update_lcdNumber();
+    void on_update_computerGame();
     void on_click_toolButton();
 
 private:
     Ui::MainWindow *ui;
-    QTimer *timer;
+    QTimer *gameTimer;
+    QTimer *computerTimer;
     Game *game;
 
 };
