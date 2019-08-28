@@ -8,7 +8,7 @@ class ComputerPlayer : public Player
 public:
     ComputerPlayer();
     ~ComputerPlayer();
-    void movePuzzle(QToolButton*, GameBoard*);
+    void movePuzzle(GameBoard*, QToolButton*);
 };
 
 #endif // COMPUTERPLAYER_H

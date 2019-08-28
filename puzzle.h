@@ -6,16 +6,13 @@
 
 class Puzzle : public QToolButton
 {
-
 public:
     Puzzle(const QString&, QWidget*);
-    Puzzle(const Puzzle&, QWidget*, int);
     ~Puzzle();
     QLabel* getLabel(void);
 
 private:
     QLabel *label;
-
 };
 
 #endif // PUZZLE_H

@@ -1,6 +1,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QDesktopWidget>
+#include <fstream>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "game.h"
@@ -16,6 +17,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     computerTimer = new QTimer(this);
     connect(computerTimer, SIGNAL(timeout()), this, SLOT(on_update_computerGame()));
+
+    ifstream exist("wyniki.txt");
+    if (!exist) {
+        ofstream results("wyniki.txt", ofstream::out);
+        results << "Rozmiar\t\tCzas\t\tGracz";
+        results.close();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -36,6 +44,8 @@ void MainWindow::on_actionNowa_Gra_triggered()
     ui->lineEdit->setVisible(false);
 
     if (ui->timeLabel->text() != "0:00.00") {
+        gameTimer->stop();
+        computerTimer->stop();
         delete game;
     }
 
@@ -64,11 +74,13 @@ void MainWindow::on_actionNowa_Gra_z_Komputerem_triggered()
     ui->lineEdit->setVisible(false);
 
     if (ui->timeLabel->text() != "0:00.00") {
+        gameTimer->stop();
+        computerTimer->stop();
         delete game;
     }
 
-    setMinimumWidth(1430);
-    setMaximumWidth(1430);
+    setMinimumWidth(1380);
+    setMaximumWidth(1380);
     QRect screenGeometry = QRect(QApplication::desktop()->screenGeometry());
     move((screenGeometry.width() - width()) / 2, y());
 
@@ -82,9 +94,12 @@ void MainWindow::on_actionNowa_Gra_z_Komputerem_triggered()
 
 void MainWindow::on_actionWczytaj_Gre_triggered()
 {
-    /*this->game = new Game("save.txt");
+    this->game = new Game(this, "zapis");
+    game->play();
+    gameTimer->start(10);
+    computerTimer->start(2000);
     ui->label->setVisible(true);
-    ui->timeLabel->setVisible(true);*/
+    ui->timeLabel->setVisible(true);
 }
 
 void MainWindow::on_update_lcdNumber()
@@ -103,19 +118,41 @@ void MainWindow::on_update_lcdNumber()
 
 void MainWindow::on_update_computerGame()
 {
-    //if placement nie jest empty, jak jest to computerTimer->stop
-    game->getPlayer2()->movePuzzle(nullptr, game->getGameBoard1());
+    game->getPlayer(2)->movePuzzle(game->getGameBoard(2));
+    game->save();
+
+    if (game->getGameBoard(2)->isSolved()) {
+        gameTimer->stop();
+        computerTimer->stop();
+        game->disable();
+
+        QMessageBox msgBox;
+        msgBox.setText("Komputer wygrywa!");
+        msgBox.exec();
+    }
 }
 
 void MainWindow::on_click_toolButton()
 {
     QToolButton* toolButton = qobject_cast<QToolButton*>(sender());
     if (toolButton) {
-        game->getPlayer1()->movePuzzle(toolButton, game->getGameBoard1());
+        game->getPlayer()->movePuzzle(game->getGameBoard(), toolButton);
+        game->save();
     }
 
-    if(game->getGameBoard1()->isSolved()) {
+    if(game->getGameBoard()->isSolved()) {
         gameTimer->stop();
         computerTimer->stop();
+        game->disable();
+
+        QMessageBox msgBox;
+        msgBox.setText(ui->lineEdit->text() + " wygrywa!");
+        msgBox.exec();
+
+        ofstream results("wyniki.txt", ofstream::app);
+        results << endl << sqrt(game->getGameBoard()->getPuzzles()->size()) << "\t\t" <<
+                   ui->timeLabel->text().toStdString() << "\t\t" <<
+                   ui->lineEdit->text().toStdString();
+        results.close();
     }
 }

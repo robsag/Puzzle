@@ -4,18 +4,18 @@
 #include <string>
 #include <gameboard.h>
 
+using namespace std;
+
 class Player
 {
-
 public:
     Player();
     virtual ~Player();
-    std::string getName(void);
-    virtual void movePuzzle(QToolButton*, GameBoard*) = 0;
+    string getName(void);
+    virtual void movePuzzle(GameBoard*, QToolButton* = nullptr) = 0;
 
 protected:
-    std::string name;
-
+    string name;
 };
 
 #endif // PLAYER_H

@@ -6,21 +6,21 @@
 #include <player.h>
 #include <mainwindow.h>
 
+using namespace std;
+
 class Game : public QObject
 {
 public:
-    Game (QWidget*, QString, int, bool = true);
-    Game(std::string);
+    Game(QWidget*, QString, int, bool = true);
+    Game(QWidget *parent, string);
     ~Game();
-    GameBoard* getGameBoard1(void);
-    GameBoard* getGameBoard2(void);
-    Player* getPlayer1(void);
-    Player* getPlayer2(void);
+    GameBoard* getGameBoard(int = 1);
+    Player* getPlayer(int = 1);
     int getTime(void);
     void setTime(int);
     void play(void);
-    void load(void);
     void save(void);
+    void disable(void);
 
 private:
     GameBoard *gameBoard1;
@@ -28,7 +28,6 @@ private:
     Player *player1;
     Player *player2;
     int time;
-
 };
 
 #endif // GAME_H

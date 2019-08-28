@@ -10,12 +10,12 @@ HumanPlayer::~HumanPlayer()
     ;
 }
 
-void HumanPlayer::movePuzzle(QToolButton *clickedButton, GameBoard *gameBoard)
+void HumanPlayer::movePuzzle(GameBoard *gameBoard, QToolButton *clickedButton)
 {
     QPoint puzzlePos = clickedButton->pos();
     int puzzleNum = clickedButton->text().toInt();
     int puzzleSize = clickedButton->width();
-    int level = int(sqrt(gameBoard->getSize()));
+    int level = int(sqrt(gameBoard->getPuzzles()->size()));
 
     //górny wolny
     if (puzzlePos.y() >= 40 + puzzleSize) {

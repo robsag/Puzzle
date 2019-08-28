@@ -6,10 +6,9 @@
 class HumanPlayer : public Player
 {
 public:
-    HumanPlayer(std::string);
+    HumanPlayer(string);
     ~HumanPlayer();
-    void movePuzzle(QToolButton*, GameBoard*);
-
+    void movePuzzle(GameBoard*, QToolButton*);
 };
 
 #endif // HUMANPLAYER_H

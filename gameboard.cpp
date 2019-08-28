@@ -4,13 +4,10 @@
 #include "gameboard.h"
 #include "puzzle.h"
 
-using namespace std;
-
 GameBoard::GameBoard(int level, QWidget *parent)
 {
     //inicjalizacja puzzli
     puzzles = new vector<Puzzle*>(unsigned(pow(level,2)));
-    //int puzzleSize = (parent->size().width() - 40)/level;
     int puzzleSize = (parent->size().height() - 140)/level;
     for (int i = 0; i < pow(level,2) - 1; i++) {
         Puzzle* newPuzzle = new Puzzle(QString::fromStdString(to_string(i + 1)), parent);
@@ -49,7 +46,8 @@ GameBoard::GameBoard(int level, QWidget *parent)
     QPoint emptyPos(positions.back());
     QPoint lastEmptyPos = emptyPos;
     vector<QPoint> emptyNeighbors;
-    for (int i = 0; i < level * 20; i++) {
+    sollution = new vector<int>;
+    for (int i = 0; i < pow(level, level); i++) {
         for (QPoint position : positions) {
             //jeżeli nie jest poprzednio ruszanym puzzlem i jest puzzlem sąsiadującym z pustym puzzlem
             if ((position.x() != lastEmptyPos.x() || position.y() != lastEmptyPos.y()) &&
@@ -75,7 +73,7 @@ GameBoard::GameBoard(int level, QWidget *parent)
         //znalezienie pozycji przesuwanego puzzla względem bazowych pozycji i dodanie puzzla do rozwiązania
         vector<QPoint>::iterator moveIter = find(positions.begin(), positions.end(), *movePosIter);
         int moveIndex = int(distance(positions.begin(), moveIter));
-        sollution.push_back(moveIndex + 1);
+        sollution->push_back(moveIndex + 1);
 
         //zamiana przyszłych pozycji puzzli
         swap(*emptyPosIter, *movePosIter);
@@ -106,18 +104,33 @@ GameBoard::GameBoard(int level, QWidget *parent)
 
 GameBoard::GameBoard(const GameBoard &gameBoard, QWidget *parent)
 {
-    puzzles = new vector<Puzzle*>;
-    for (Puzzle *puzzle : *(gameBoard.puzzles)) {
-        puzzles->push_back(new Puzzle(*puzzle, parent, int(sqrt(gameBoard.puzzles->size()))));
-    }
-
-    for (int step : gameBoard.sollution) {
-        sollution.push_back(step);
+    sollution = new vector<int>;
+    for (int step : *(gameBoard.sollution)) {
+        sollution->push_back(step);
     }
 
     placement = new vector<int>;
     for (int value : *(gameBoard.placement)) {
         placement->push_back(value);
+    }
+
+    puzzles = new vector<Puzzle*>(gameBoard.puzzles->size());
+    int puzzleSize = (*gameBoard.puzzles->begin())->height();
+    for (int i = 0; i < int(gameBoard.puzzles->size()) - 1; i++) {
+        Puzzle* newPuzzle = new Puzzle(QString::fromStdString(to_string(i + 1)), parent);
+        newPuzzle->resize(puzzleSize, puzzleSize);
+        newPuzzle->getLabel()->resize(puzzleSize, puzzleSize);
+        newPuzzle->getLabel()->setFont(QFont("Snap ITC", newPuzzle->height() / 8));
+
+        Puzzle* pattern = (*gameBoard.puzzles)[unsigned(i)];
+        int level = int(sqrt(gameBoard.puzzles->size()));
+        newPuzzle->setIcon(pattern->icon());
+        newPuzzle->setIconSize(pattern->iconSize());
+        newPuzzle->move(pattern->pos().x() + pattern->width()*level + 20, pattern->pos().y());
+
+        //vector<int>::iterator placeIter = find(placement->begin(), placement->end(), i + 1);
+        //int placeIndex = int(distance(placement->begin(), placeIter));
+        (*puzzles)[unsigned(i)] = newPuzzle;
     }
 }
 
@@ -131,7 +144,7 @@ GameBoard::~GameBoard()
     }
 }
 
-std::vector<Puzzle *> *GameBoard::getPuzzles()
+vector<Puzzle *> *GameBoard::getPuzzles()
 {
     return puzzles;
 }
@@ -141,7 +154,7 @@ Puzzle* GameBoard::getPuzzle(int pos)
     return (*puzzles)[unsigned(pos)];
 }
 
-Puzzle *GameBoard::getPuzzleByPos(const QPoint &pos)
+Puzzle* GameBoard::getPuzzleByPos(const QPoint &pos)
 {
     for (Puzzle *puzzle : *puzzles) {
         if (puzzle != nullptr) {
@@ -172,18 +185,14 @@ void GameBoard::setPuzzlePos(int num, const QPoint &pos)
     (*placement)[unsigned(emptyIndex)] = num + 1;
 }
 
-int GameBoard::getSize()
+vector<int>* GameBoard::getSollution()
 {
-    return int(puzzles->size());
+    return sollution;
 }
 
-void GameBoard::display()
+vector<int>* GameBoard::getPlacement()
 {
-    for (int i = 0; i < int(puzzles->size()); i++) {
-        if ((*puzzles)[unsigned(i)] != nullptr) {
-            (*puzzles)[unsigned(i)]->show();
-        }
-    }
+    return placement;
 }
 
 bool GameBoard::isSolved(void)
@@ -195,4 +204,13 @@ bool GameBoard::isSolved(void)
     }
 
     return true;
+}
+
+void GameBoard::display()
+{
+    for (int i = 0; i < int(puzzles->size()); i++) {
+        if ((*puzzles)[unsigned(i)] != nullptr) {
+            (*puzzles)[unsigned(i)]->show();
+        }
+    }
 }

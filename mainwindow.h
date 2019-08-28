@@ -5,9 +5,7 @@
 
 class Game;
 
-namespace Ui {
-class MainWindow;
-}
+namespace Ui { class MainWindow; }
 
 class MainWindow : public QMainWindow
 {
@@ -30,7 +28,6 @@ private:
     QTimer *gameTimer;
     QTimer *computerTimer;
     Game *game;
-
 };
 
 #endif // MAINWINDOW_H
