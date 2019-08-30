@@ -49,6 +49,8 @@ void MainWindow::on_actionNowa_Gra_triggered()
         delete game;
     }
 
+    remove("zapis");
+
     setMinimumWidth(700);
     setMaximumWidth(700);
     QRect screenGeometry = QRect(QApplication::desktop()->screenGeometry());
@@ -79,6 +81,8 @@ void MainWindow::on_actionNowa_Gra_z_Komputerem_triggered()
         delete game;
     }
 
+    remove("zapis");
+
     setMinimumWidth(1380);
     setMaximumWidth(1380);
     QRect screenGeometry = QRect(QApplication::desktop()->screenGeometry());
@@ -94,12 +98,34 @@ void MainWindow::on_actionNowa_Gra_z_Komputerem_triggered()
 
 void MainWindow::on_actionWczytaj_Gre_triggered()
 {
-    this->game = new Game(this, "zapis");
-    game->play();
-    gameTimer->start(10);
-    computerTimer->start(2000);
-    ui->label->setVisible(true);
-    ui->timeLabel->setVisible(true);
+    ifstream exist("zapis");
+    if (exist) {
+        exist.close();
+
+        ui->label2->setVisible(false);
+        ui->lineEdit->setVisible(false);
+
+        game = new Game(this, "zapis");
+        game->play();
+        gameTimer->start(10);
+        ui->lineEdit->setText(QString::fromStdString(game->getPlayer()->getName()));
+        ui->label->setVisible(true);
+        ui->timeLabel->setVisible(true);
+        if (game->getGameBoard(2) == nullptr) {
+            setMinimumWidth(700);
+            setMaximumWidth(700);
+        } else {
+            computerTimer->start(2000);
+            setMinimumWidth(1380);
+            setMaximumWidth(1380);
+        }
+        QRect screenGeometry = QRect(QApplication::desktop()->screenGeometry());
+        move((screenGeometry.width() - width()) / 2, y());
+    } else {
+        QMessageBox msgBox;
+        msgBox.setText("brak zapisanej gry");
+        msgBox.exec();
+    }
 }
 
 void MainWindow::on_update_lcdNumber()
@@ -129,6 +155,8 @@ void MainWindow::on_update_computerGame()
         QMessageBox msgBox;
         msgBox.setText("Komputer wygrywa!");
         msgBox.exec();
+
+        remove("zapis");
     }
 }
 
@@ -154,5 +182,7 @@ void MainWindow::on_click_toolButton()
                    ui->timeLabel->text().toStdString() << "\t\t" <<
                    ui->lineEdit->text().toStdString();
         results.close();
+
+        remove("zapis");
     }
 }

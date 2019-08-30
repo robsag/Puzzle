@@ -11,7 +11,7 @@ Puzzle::Puzzle(const QString &text, QWidget *parent) : QToolButton(parent)
 
 Puzzle::~Puzzle()
 {
-
+    ;
 }
 
 QLabel* Puzzle::getLabel()

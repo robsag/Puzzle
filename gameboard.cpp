@@ -1,12 +1,11 @@
 #include <algorithm>
 #include <random>
-#include <omp.h>
 #include "gameboard.h"
 #include "puzzle.h"
 
 GameBoard::GameBoard(int level, QWidget *parent)
 {
-    //inicjalizacja puzzli
+    /*! inicjalizacja puzzli */
     puzzles = new vector<Puzzle*>(unsigned(pow(level,2)));
     int puzzleSize = (parent->size().height() - 140)/level;
     for (int i = 0; i < pow(level,2) - 1; i++) {
@@ -17,7 +16,7 @@ GameBoard::GameBoard(int level, QWidget *parent)
         (*puzzles)[unsigned(i)] = newPuzzle;
     }
 
-    //ustawianie tła puzzli
+    /*! ustawianie tła puzzli */
     QPixmap puzzleBackground(":/PuzzleBackground/gg_pw.jpg");
     int rectWidth = puzzleBackground.width()/level;
     int rectHeight = puzzleBackground.height()/level;
@@ -33,7 +32,7 @@ GameBoard::GameBoard(int level, QWidget *parent)
         }
     }
 
-    //generowanie pozycji puzzli
+    /*! generowanie pozycji puzzli */
     vector<QPoint> basePositions(unsigned(pow(level,2)));
     for (int i = 0; i < level; i++) {
         for (int j = 0; j < level; j++) {
@@ -41,7 +40,7 @@ GameBoard::GameBoard(int level, QWidget *parent)
         }
     }
 
-    //mieszanie pozycji puzzli
+    /*! mieszanie pozycji puzzli */
     vector<QPoint> positions(basePositions);
     QPoint emptyPos(positions.back());
     QPoint lastEmptyPos = emptyPos;
@@ -49,7 +48,7 @@ GameBoard::GameBoard(int level, QWidget *parent)
     sollution = new vector<int>;
     for (int i = 0; i < pow(level, level); i++) {
         for (QPoint position : positions) {
-            //jeżeli nie jest poprzednio ruszanym puzzlem i jest puzzlem sąsiadującym z pustym puzzlem
+            /*! jeżeli nie jest poprzednio ruszanym puzzlem i jest puzzlem sąsiadującym z pustym puzzlem */
             if ((position.x() != lastEmptyPos.x() || position.y() != lastEmptyPos.y()) &&
                 ((position.x() == emptyPos.x() && position.y() == emptyPos.y() + puzzleSize) ||
                  (position.x() == emptyPos.x() && position.y() == emptyPos.y() - puzzleSize) ||
@@ -70,29 +69,29 @@ GameBoard::GameBoard(int level, QWidget *parent)
         vector<QPoint>::iterator emptyPosIter = find(positions.begin(), positions.end(),emptyPos);
         vector<QPoint>::iterator movePosIter = find(positions.begin(), positions.end(), emptyNeighbors[0]);
 
-        //znalezienie pozycji przesuwanego puzzla względem bazowych pozycji i dodanie puzzla do rozwiązania
+        /*! znalezienie pozycji przesuwanego puzzla względem bazowych pozycji i dodanie puzzla do rozwiązania */
         vector<QPoint>::iterator moveIter = find(positions.begin(), positions.end(), *movePosIter);
         int moveIndex = int(distance(positions.begin(), moveIter));
         sollution->push_back(moveIndex + 1);
 
-        //zamiana przyszłych pozycji puzzli
+        /*! zamiana przyszłych pozycji puzzli */
         swap(*emptyPosIter, *movePosIter);
 
-        //aktualizacja pozycji pustego puzzla
+        /*! aktualizacja pozycji pustego puzzla */
         emptyPos = *emptyPosIter;
 
         emptyNeighbors.clear();
     }
 
-    //znajdowanie rozmieszczenia puzzli
+    /*! znajdowanie rozmieszczenia puzzli */
     placement = new vector<int>;
     for(QPoint position : basePositions){
         vector<QPoint>::iterator it = find(positions.begin(), positions.end(), position);
         int index = int(distance(positions.begin(), it));
-        placement->push_back((index + 1) % int(puzzles->size())); //żeby 0 zamiast ostatniego
+        placement->push_back((index + 1) % int(puzzles->size())); /*!< operacja modulo żeby ustawić 0 zamiast ostatniego */
     }
 
-    //ustawienie pozycji puzzli
+    /*! ustawienie pozycji puzzli */
     for (int i = 0; i < level; i++) {
         for (int j = 0; j < level; j++) {
             if (i != (level - 1) || j != (level - 1)) {
@@ -100,6 +99,67 @@ GameBoard::GameBoard(int level, QWidget *parent)
             }
         }
     }
+}
+
+GameBoard::GameBoard(int level, QWidget *parent, vector<int> placement, bool singleplayer)
+{
+    /*! inicjalizacja puzzli */
+    puzzles = new vector<Puzzle*>(unsigned(pow(level,2)));
+    int puzzleSize = (parent->size().height() - 140)/level;
+    for (int i = 0; i < pow(level,2) - 1; i++) {
+        Puzzle* newPuzzle = new Puzzle(QString::fromStdString(to_string(i + 1)), parent);
+        newPuzzle->resize(puzzleSize,puzzleSize);
+        newPuzzle->getLabel()->resize(puzzleSize,puzzleSize);
+        newPuzzle->getLabel()->setFont(QFont("Snap ITC", newPuzzle->height() / 8));
+        (*puzzles)[unsigned(i)] = newPuzzle;
+    }
+
+    /*! ustawianie tła puzzli */
+    QPixmap puzzleBackground(":/PuzzleBackground/gg_pw.jpg");
+    int rectWidth = puzzleBackground.width()/level;
+    int rectHeight = puzzleBackground.height()/level;
+    for (int i = 0; i < level; i++) {
+        for (int j = 0; j < level; j++) {
+            if ((*puzzles)[unsigned(i*level + j)] != nullptr) {
+                QRect rect(rectWidth * i, rectHeight * j, puzzleSize - 10, puzzleSize - 10);
+                QPixmap croppedBackground = puzzleBackground.copy(rect);
+                QIcon buttonBackground(croppedBackground);
+                (*puzzles)[unsigned(j*level + i)]->setIcon(croppedBackground);
+                (*puzzles)[unsigned(j*level + i)]->setIconSize(croppedBackground.rect().size());
+            }
+        }
+    }
+
+    /*! generowanie pozycji puzzli */
+    vector<QPoint> basePositions(unsigned(pow(level,2)));
+    if (singleplayer) {
+        for (int i = 0; i < level; i++) {
+            for (int j = 0; j < level; j++) {
+                basePositions[unsigned(j*level + i)] = QPoint(20 + i*puzzleSize, 40 + j*puzzleSize);
+            }
+        }
+    } else {
+        for (int i = 0; i < level; i++) {
+            for (int j = 0; j < level; j++) {
+                basePositions[unsigned(j*level + i)] = QPoint(40 + level*puzzleSize + i*puzzleSize, 40 + j*puzzleSize);
+            }
+        }
+    }
+
+    /*! ustawienie pozycji puzzli */
+    for(int i = 0; i < int(puzzles->size()) - 1; i++) {
+        vector<int>::iterator placeIter = find(placement.begin(), placement.end(), i + 1);
+        int placeIndex = int(distance(placement.begin(), placeIter));
+        (*puzzles)[unsigned(i)]->move(basePositions[unsigned(placeIndex)]);
+    }
+
+    /*! wczytanie rozmieszczenia puzzli */
+    this->placement = new vector<int>;
+    for (int place : placement) {
+        this->placement->push_back(place);
+    }
+
+    sollution = new vector<int>;
 }
 
 GameBoard::GameBoard(const GameBoard &gameBoard, QWidget *parent)
@@ -128,8 +188,6 @@ GameBoard::GameBoard(const GameBoard &gameBoard, QWidget *parent)
         newPuzzle->setIconSize(pattern->iconSize());
         newPuzzle->move(pattern->pos().x() + pattern->width()*level + 20, pattern->pos().y());
 
-        //vector<int>::iterator placeIter = find(placement->begin(), placement->end(), i + 1);
-        //int placeIndex = int(distance(placement->begin(), placeIter));
         (*puzzles)[unsigned(i)] = newPuzzle;
     }
 }

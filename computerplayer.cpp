@@ -18,7 +18,7 @@ void ComputerPlayer::movePuzzle(GameBoard* gameBoard, QToolButton *)
     int level = int(sqrt(gameBoard->getPuzzles()->size()));
     gameBoard->getSollution()->pop_back();
 
-    //górny wolny
+    /*! jeżeli górny wolny */
     if (puzzlePos.y() >= 40 + puzzleSize) {
         if (gameBoard->getPuzzleByPos(QPoint(puzzlePos.x(), puzzlePos.y() - puzzleSize)) == nullptr) {
             gameBoard->setPuzzlePos(puzzleNum - 1, QPoint(puzzlePos.x(), puzzlePos.y() - puzzleSize));
@@ -26,7 +26,7 @@ void ComputerPlayer::movePuzzle(GameBoard* gameBoard, QToolButton *)
         }
     }
 
-    //dolny wolny
+    /*! jeżeli dolny wolny */
     if (puzzlePos.y() < 40 + puzzleSize*(level - 1)) {
         if (gameBoard->getPuzzleByPos(QPoint(puzzlePos.x(), puzzlePos.y() + puzzleSize)) == nullptr) {
             gameBoard->setPuzzlePos(puzzleNum - 1, QPoint(puzzlePos.x(), puzzlePos.y() + puzzleSize));
@@ -34,7 +34,7 @@ void ComputerPlayer::movePuzzle(GameBoard* gameBoard, QToolButton *)
         }
     }
 
-    //lewy wolny
+    /*! jeżeli lewy wolny */
     if (puzzlePos.x() >= 20 + puzzleSize*(1 + level)) {
         if (gameBoard->getPuzzleByPos(QPoint(puzzlePos.x() - puzzleSize, puzzlePos.y())) == nullptr) {
             gameBoard->setPuzzlePos(puzzleNum - 1, QPoint(puzzlePos.x() - puzzleSize, puzzlePos.y()));
@@ -42,7 +42,7 @@ void ComputerPlayer::movePuzzle(GameBoard* gameBoard, QToolButton *)
         }
     }
 
-    //prawy wolny
+    /*! jeżeli prawy wolny */
     if (puzzlePos.x() < 20 + puzzleSize*(2*level - 1)) {
         if (gameBoard->getPuzzleByPos(QPoint(puzzlePos.x() + puzzleSize, puzzlePos.y())) == nullptr) {
             gameBoard->setPuzzlePos(puzzleNum - 1, QPoint(puzzlePos.x() + puzzleSize, puzzlePos.y()));
